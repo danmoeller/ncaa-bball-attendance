@@ -7,9 +7,13 @@ class TeamSpider(scrapy.Spider):
 	]
 
 	def parse(self, response):
-		for conf in response.css('ul'):
-			for team in conf.css('li'):
-				yield {
-					'team':team.css('h5 a::text').extract(),
-					'id':team.css('h5 a::attr(href)').extract()[0].split('/')[7]
-				}
+		for col in response.css('div.span-2'):
+			for conf in col.css('div.mod-container'):
+				conference = conf.css('h4::text').extract()[0]
+				for team in conf.css('li'):
+					yield {
+						'id':team.css('h5 a::attr(href)').extract()[0].split('/')[7],
+						'school':team.css('h5 a::text').extract()[0].replace(" ", "_").lower(),
+						'url_name':team.css('h5 a::attr(href)').extract()[0].split('/')[8],
+						'conf':conference.replace(" ", "_").lower()
+					}
