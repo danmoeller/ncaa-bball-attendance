@@ -26,6 +26,6 @@ class ESPNSpider(scrapy.Spider):
 						'home_id': self.start_urls[0].split('/')[8],
 						'opp_id': team.css('td ul a::attr(href)').extract()[0].split('/')[7],
 						'score': team.css('td ul a::text').extract()[1].split(' ')[0],
-						'result': team.css('td ul span::text').extract()[0].lower(),
+						'result': result
 						# 'post_conf_record': team.css('td::text').extract()[1].split()[1]
 						}
