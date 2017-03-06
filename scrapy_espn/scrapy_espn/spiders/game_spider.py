@@ -36,6 +36,12 @@ class GameSpider(scrapy.Spider):
 		except IndexError:
 			away_rank = 0
 
+		try:
+			tv_coverage = response.css('div.game-network::text').extract()[0].split()[1].lower()
+		except IndexError:
+			tv_coverage = ""
+
+
 		yield {
 			'game_id': self.start_urls[0].split('/')[4].split('=')[1],
 			# 'home_name':response.css('div.team-info a.team-name span.long-name::text').extract()[1].replace(" ", "_").lower(),
@@ -51,7 +57,7 @@ class GameSpider(scrapy.Spider):
 			'date': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0],
 			'time': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[1][:-1],
 			'arena': arena,
-			'tv_coverage': response.css('div.game-network::text').extract()[0].split()[1].lower(),
+			'tv_coverage': tv_coverage,
 			'line': line,
 			'attendance': response.css('div.game-info-note.capacity::text').extract()[0].split()[1].replace(',',''),
 			'capacity': response.css('div.game-info-note.capacity::text').extract()[1].split()[1].replace(',','')
