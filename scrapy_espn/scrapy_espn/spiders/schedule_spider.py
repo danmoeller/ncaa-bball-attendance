@@ -2,7 +2,7 @@ import datetime
 import scrapy
 
 class ESPNSpider(scrapy.Spider):
-	name = "espn"
+	name = "schedule"
 
 	def __init__(self, team='', year='', *args, **kwargs):
 		super(ESPNSpider, self).__init__(*args, **kwargs)
