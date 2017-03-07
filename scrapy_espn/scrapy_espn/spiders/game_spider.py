@@ -22,7 +22,10 @@ class GameSpider(scrapy.Spider):
 		try:
 			arena = response.css('figcaption div::text').extract()[0].strip().replace(" ", "_").lower()
 		except IndexError:
-			arena = response.css('div.location-details span::text').extract()[0].replace(" ", "_").lower()
+			try:
+				arena = response.css('div.location-details span::text').extract()[0].replace(" ", "_").lower()
+			except IndexError:
+				arena = ""
 
 		# AP rank or else 0
 		try:
