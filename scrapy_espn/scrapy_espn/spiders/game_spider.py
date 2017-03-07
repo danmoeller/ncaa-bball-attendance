@@ -69,16 +69,17 @@ class GameSpider(scrapy.Spider):
 		home_score = response.css('div.score::text').extract()[1]
 		away_score = response.css('div.score::text').extract()[0]
 
+		home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0])
+		home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
+		away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0])
+		away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
+
 		if home_score > away_score:
-			home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0]) - 1
-			home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
-			away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0])
-			away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1]) - 1
+			home_wins -= 1
+			away_loses -= 1
 		else:
-			home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0])
-			home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1]) - 1
-			away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0]) - 1
-			away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
+			home_loses -= 1
+			away_wins -= 1
 
 		
 		yield {
