@@ -46,6 +46,12 @@ class GameSpider(scrapy.Spider):
 			else:
 				away_win_pct = away_wins / away_losses
 
+		# home opener check
+		if home_wins + home_losses == 0:
+			first_game = "true"
+		else:
+			first_game = "false"
+
 
 		# home AP rank else 0
 		try:
@@ -117,6 +123,7 @@ class GameSpider(scrapy.Spider):
 			'home_losses': home_losses,
 			'home_win_pct': home_win_pct,
 			'home_score': home_score,
+			'first_game': first_game,
 			# 'home_record': response.css('div.team-info div.record::text').extract()[1],
 			#'home_conf_record': home_conf_record,
 			#'away_name':response.css('div.team-info a.team-name span.long-name::text').extract()[0].replace(" ", "_").lower(),
