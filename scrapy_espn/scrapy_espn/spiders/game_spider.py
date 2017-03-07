@@ -1,4 +1,5 @@
 from __future__ import division
+import datetime
 import scrapy
 
 
@@ -143,6 +144,7 @@ class GameSpider(scrapy.Spider):
 			#'away_conf_record': away_conf_record,
 			'date': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0],
 			'time': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[1][:-1],
+			'day': datetime.datetime.strptime(response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0], '%Y-%m-%d').strftime('%A').lower(),
 			# 'arena': arena,
 			'tv_coverage': tv_coverage,
 			'line': line,
