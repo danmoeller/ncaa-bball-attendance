@@ -26,11 +26,16 @@ if [ "$1" != "" ]; then
 
 			{
 				read
-				while IFS=, read game_id neutral_court
+				while IFS=, read game_id neutral
 				do
-					# TODO: Do not crawl game if it is at a neutral site
-					printf "crawling game: $game_id\n\n"
-					scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
+					# Ensure game is not on neutral court
+					if [ "$(echo ${neutral} | tr -d '\r' | tr -d '\n')" == "true" ]; then
+						# TODO: should make this on option for future analysis
+						echo "Skipping game: $game_id since on neutral court"
+					else
+						echo "crawling game: $game_id"
+						scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
+					fi
 				done 
 			} < "../data/$1_$2_schedule.csv"
 

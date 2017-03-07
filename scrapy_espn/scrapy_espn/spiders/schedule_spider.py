@@ -14,26 +14,28 @@ class ESPNSpider(scrapy.Spider):
 			if team.css('::attr(class)').extract()[0] not in ['colhead', 'stathead', 'evenrow', 'oddrow']:
 		 		if len(team.css('td::text').extract()) == 2:
 		 			try:
-		 				result = team.css('td ul span::text').extract()[0].lower()
-						if result == "w":
-		 					record = str(int(team.css('td::text').extract()[1].split()[0].split('-')[0]) - 1) + "-" + team.css('td::text').extract()[1].split()[0].split('-')[1]
-		 				else:
-		 					record = team.css('td::text').extract()[1].split()[0].split('-')[0] + "-" + str(int(team.css('td::text').extract()[1].split()[0].split('-')[1]) - 1)
+
+		 				# result = team.css('td ul span::text').extract()[0].lower()
+
+						# if result == "w":
+		 				# 	record = str(int(team.css('td::text').extract()[1].split()[0].split('-')[0]) - 1) + "-" + team.css('td::text').extract()[1].split()[0].split('-')[1]
+		 				# else:
+		 				# 	record = team.css('td::text').extract()[1].split()[0].split('-')[0] + "-" + str(int(team.css('td::text').extract()[1].split()[0].split('-')[1]) - 1)
 
 		 				#check to see if it is a neutral court game
 						try:
 							if team.css('td ul li::text').extract()[2] == "*":
-								neutral = "yes"
+								neutral = "true"
 							else:
-								neutral = "no"
+								neutral = "false"
 						except IndexError:
 							try:
 								if team.css('td ul li::text').extract()[1] == "*":
-									neutral = "yes"
+									neutral = "true"
 								else:
-									neutral = "no"
+									neutral = "false"
 							except IndexError:
-								neutral = "no"
+								neutral = "false"
 
 						yield {
 							# 'record': record,
