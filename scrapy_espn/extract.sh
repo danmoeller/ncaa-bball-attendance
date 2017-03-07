@@ -1,7 +1,6 @@
 #!/bin/bash
 import sys
 
-file="../data/team_list.csv"
 FOUND=0
 
 if [ "$1" != "" ]; then
@@ -15,7 +14,7 @@ if [ "$1" != "" ]; then
 				printf "\nCrawling: $school schedule for year $2\n\n"
     		fi
 		done 
-	} < "$file"
+	} < "../data/team_list.csv"
 
 	if [ "$FOUND" == 1 ]; then
 		echo "scrapy crawl schedule -a team=$1 -a year=$2 -o $1_$2.csv -t csv"
