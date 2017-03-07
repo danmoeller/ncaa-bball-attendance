@@ -1,4 +1,5 @@
 import scrapy
+from __future__ import division
 
 class GameSpider(scrapy.Spider):
 	name = "game"
@@ -15,17 +16,36 @@ class GameSpider(scrapy.Spider):
 
 		# record of home & away after game
 		home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0])
-		home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
+		home_losses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
 		away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0])
-		away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
+		away_losses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
 
 		# convert to record before game for home & away
 		if home_score > away_score:
 			home_wins -= 1
-			away_loses -= 1
+			away_losses -= 1
 		else:
-			home_loses -= 1
+			home_losses -= 1
 			away_wins -= 1
+
+		# win percentage of home team
+		if home_wins == 0:
+			home_win_pct = 0
+		else:
+			if home_losses == 0:
+				home_win_pct = 1
+			else:
+				home_win_pct = home_wins / home_losses
+
+		# win percentage of home team
+		if away_wins == 0:
+			away_win_pct = 0
+		else:
+			if away_losses == 0:
+				away_win_pct = 1
+			else:
+				away_win_pct = away_wins / away_losses
+
 
 		# home AP rank else 0
 		try:
@@ -94,7 +114,8 @@ class GameSpider(scrapy.Spider):
 			'home_id': response.css('div.team-info a::attr(href)').extract()[1].split('/')[5],
 			'home_rank': home_rank,
 			'home_wins': home_wins,
-			'home_loses': home_loses,
+			'home_losses': home_losses,
+			'home_win_pct': home_win_pct,
 			'home_score': home_score,
 			# 'home_record': response.css('div.team-info div.record::text').extract()[1],
 			#'home_conf_record': home_conf_record,
@@ -102,7 +123,8 @@ class GameSpider(scrapy.Spider):
 			'away_id': response.css('div.team-info a::attr(href)').extract()[0].split('/')[5],
 			'away_rank': away_rank,
 			'away_wins': away_wins,
-			'away_loses': away_loses,
+			'away_losses': away_losses,
+			'away_win_pct': away_win_pct,
 			'away_score': away_score,
 			# 'away_record': response.css('div.team-info div.record::text').extract()[0],
 			#'away_conf_record': away_conf_record,
