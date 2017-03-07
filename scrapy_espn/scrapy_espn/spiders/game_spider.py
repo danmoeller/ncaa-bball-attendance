@@ -66,18 +66,38 @@ class GameSpider(scrapy.Spider):
 		except IndexError:
 			away_conf_record = "0-0"
 
+		home_score = response.css('div.score::text').extract()[1]
+		away_score = response.css('div.score::text').extract()[0]
 
+		if home_score > away_score:
+			home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0]) - 1
+			home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
+			away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0])
+			away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1]) - 1
+		else:
+			home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0])
+			home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1]) - 1
+			away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0]) - 1
+			away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
+
+		
 		yield {
 			'game_id': self.start_urls[0].split('/')[4].split('=')[1],
 			# 'home_name':response.css('div.team-info a.team-name span.long-name::text').extract()[1].replace(" ", "_").lower(),
 			'home_id': response.css('div.team-info a::attr(href)').extract()[1].split('/')[5],
 			'home_rank': home_rank,
-			'home_record': response.css('div.team-info div.record::text').extract()[1],
+			'home_wins': home_wins,
+			'home_loses': home_loses,
+			'home_score': home_score,
+			# 'home_record': response.css('div.team-info div.record::text').extract()[1],
 			#'home_conf_record': home_conf_record,
 			#'away_name':response.css('div.team-info a.team-name span.long-name::text').extract()[0].replace(" ", "_").lower(),
 			'away_id': response.css('div.team-info a::attr(href)').extract()[0].split('/')[5],
 			'away_rank': away_rank,
-			'away_record': response.css('div.team-info div.record::text').extract()[0],
+			'away_wins': away_wins,
+			'away_loses': away_loses,
+			'away_score': away_score,
+			# 'away_record': response.css('div.team-info div.record::text').extract()[0],
 			#'away_conf_record': away_conf_record,
 			'date': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0],
 			'time': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[1][:-1],
