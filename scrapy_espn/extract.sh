@@ -26,15 +26,20 @@ if [ "$1" != "" ]; then
 
 		{
 			read
-			while IFS=, read home_id record score result opp_id date_time game_id day
+			while IFS=, read game_id neutral_court
 			do
-				echo "crawling game: $game_id"
-				scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
+				if [ "$neutral_court" == 1]; then
+					printf "\n\nSkipping game: $game_id since it is neutral court\n\n"
+				else
+					printf "\n\ncrawling game: $game_id\n\n"
+					scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
+				fi
 			done 
 		} < "../data/$1_$2_schedule.csv"
 
-		sort "$1_$2_games.csv" | uniq -u > "../data/$1_$2_games.csv"
+		cat -n "$1_$2_games.csv" | sort -uk2 | sort -nk1 | cut -f2- > "../data/$1_$2_games.csv"
 		rm "$1_$2_games.csv"
+
 
 
 
