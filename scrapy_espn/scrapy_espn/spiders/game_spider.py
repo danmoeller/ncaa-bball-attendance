@@ -9,7 +9,64 @@ class GameSpider(scrapy.Spider):
 
 	def parse(self, response):
 
-		# line is in terms of the home game
+		# home & away score
+		home_score = response.css('div.score::text').extract()[1]
+		away_score = response.css('div.score::text').extract()[0]
+
+		# record of home & away after game
+		home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0])
+		home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
+		away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0])
+		away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
+
+		# convert to record before game for home & away
+		if home_score > away_score:
+			home_wins -= 1
+			away_loses -= 1
+		else:
+			home_loses -= 1
+			away_wins -= 1
+
+		# home AP rank else 0
+		try:
+			home_rank = response.css('div.team-info span.rank::text').extract()[1]
+		except IndexError:
+			home_rank = 0
+		
+		# away AP rank else 0
+		try:
+			away_rank = response.css('div.team-info span.rank::text').extract()[0]
+		except IndexError:
+			away_rank = 0
+
+		# home team conference record
+		# try:
+		# 	home_conf_record = response.css('div.team-info div.record span.inner-record::text').extract()[1].split()[1]
+		# except IndexError:
+		# 	home_conf_record = "0-0"
+
+		# away team conference record
+		# try:
+		# 	away_conf_record = response.css('div.team-info div.record span.inner-record::text').extract()[0].split()[1]
+		# except IndexError:
+		# 	away_conf_record = "0-0"
+
+		# arena name 
+		# try:
+		# 	arena = response.css('figcaption div::text').extract()[0].strip().replace(" ", "_").lower()
+		# except IndexError:
+		# 	try:
+		# 		arena = response.css('div.location-details span::text').extract()[0].replace(" ", "_").lower()
+		# 	except IndexError:
+		# 		arena = ""
+
+		#tv network showing game
+		try:
+			tv_coverage = response.css('div.game-network::text').extract()[0].split()[1].lower()
+		except IndexError:
+			tv_coverage = ""
+
+		# betting line in terms of home team
 		try:
 			line = response.css('div.odds-details ul li::text').extract()[0].split()[2][1:]
 			if response.css('div.team-info a.team-name span.abbrev::text').extract()[1] == response.css('div.odds-details ul li::text').extract()[0].split()[1]:
@@ -19,71 +76,17 @@ class GameSpider(scrapy.Spider):
 		except IndexError:
 			line = 0
 
-		try:
-			arena = response.css('figcaption div::text').extract()[0].strip().replace(" ", "_").lower()
-		except IndexError:
-			try:
-				arena = response.css('div.location-details span::text').extract()[0].replace(" ", "_").lower()
-			except IndexError:
-				arena = ""
-
-		# AP rank or else 0
-		try:
-			home_rank = response.css('div.team-info span.rank::text').extract()[1]
-		except IndexError:
-			home_rank = 0
-		
-		# AP rank or else 0
-		try:
-			away_rank = response.css('div.team-info span.rank::text').extract()[0]
-		except IndexError:
-			away_rank = 0
-
-		#tv network if available
-		try:
-			tv_coverage = response.css('div.game-network::text').extract()[0].split()[1].lower()
-		except IndexError:
-			tv_coverage = ""
-
-		#attendance if availalbe
+		#attendance
 		try:
 			attendance = response.css('div.game-info-note.capacity::text').extract()[0].split()[1].replace(',','')
 		except IndexError:
 			attendance = ""
 
-		#capacity if available
+		#capacity of arena
 		try:
 			capacity = response.css('div.game-info-note.capacity::text').extract()[1].split()[1].replace(',','')
 		except IndexError:
 			capacity = ""
-
-		#home team conference record if available
-		try:
-			home_conf_record = response.css('div.team-info div.record span.inner-record::text').extract()[1].split()[1]
-		except IndexError:
-			home_conf_record = "0-0"
-
-		#away team conference record if available
-		try:
-			away_conf_record = response.css('div.team-info div.record span.inner-record::text').extract()[0].split()[1]
-		except IndexError:
-			away_conf_record = "0-0"
-
-		home_score = response.css('div.score::text').extract()[1]
-		away_score = response.css('div.score::text').extract()[0]
-
-		home_wins = int(response.css('div.team-info div.record::text').extract()[1].split("-")[0])
-		home_loses = int(response.css('div.team-info div.record::text').extract()[1].split("-")[1])
-		away_wins = int(response.css('div.team-info div.record::text').extract()[0].split("-")[0])
-		away_loses = int(response.css('div.team-info div.record::text').extract()[0].split("-")[1])
-
-		if home_score > away_score:
-			home_wins -= 1
-			away_loses -= 1
-		else:
-			home_loses -= 1
-			away_wins -= 1
-
 		
 		yield {
 			'game_id': self.start_urls[0].split('/')[4].split('=')[1],
