@@ -5,12 +5,12 @@ file="../data/team_list.csv"
 FOUND=0
 
 if [ "$1" != "" ]; then
-    
     {
 		read
 		while IFS=, read school name num conf
 		do
 			if [[ "$num" == "$1" ]]; then
+				# Found a school with an id that matches the first argument
 				FOUND=1
 				printf "\nCrawling: $school schedule for year $2\n\n"
     		fi
@@ -40,13 +40,9 @@ if [ "$1" != "" ]; then
 		# Delete temporary schedule file
 		rm "../data/$1_$2_schedule.csv"
 
+		# Remove duplicate data lines (mostly headers)
 		cat -n "$1_$2_games.csv" | sort -uk2 | sort -nk1 | cut -f2- > "../data/$1_$2_games.csv"
 		rm "$1_$2_games.csv"
-
-
-
-
-
 
 	else
 		printf "\n\nCould not find a team that corresponds to team identifier: $1\n\n"
