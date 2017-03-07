@@ -1,5 +1,6 @@
-import scrapy
 from __future__ import division
+import scrapy
+
 
 class GameSpider(scrapy.Spider):
 	name = "game"
@@ -52,7 +53,6 @@ class GameSpider(scrapy.Spider):
 		else:
 			first_game = "false"
 
-
 		# home AP rank else 0
 		try:
 			home_rank = response.css('div.team-info span.rank::text').extract()[1]
@@ -102,6 +102,12 @@ class GameSpider(scrapy.Spider):
 		except IndexError:
 			line = 0
 
+		# scoring line: over/under
+		try:
+			scoring_line = response.css('div.odds-details ul li::text').extract()[1].split()[1]
+		except IndexError:
+			scoring_line = ""
+
 		#attendance
 		try:
 			attendance = response.css('div.game-info-note.capacity::text').extract()[0].split()[1].replace(',','')
@@ -140,6 +146,7 @@ class GameSpider(scrapy.Spider):
 			# 'arena': arena,
 			'tv_coverage': tv_coverage,
 			'line': line,
+			'scoring_line': scoring_line,
 			'attendance': attendance,
 			'capacity': capacity
 			#'refs': response.css('div.game-info-note span::text').extract()
