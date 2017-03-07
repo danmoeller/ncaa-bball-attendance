@@ -7,6 +7,7 @@ if [ "$1" != "" ]; then
 			YEAR=$2
 			while [ $YEAR -le $3 ]
 			do
+				# Append years data to our combined file
 				cat "../data/$1_${YEAR}_games.csv" >> "$1_games_$2-$3.csv"
 				echo "Combined $YEAR to our file"
 				(( YEAR++ ))
