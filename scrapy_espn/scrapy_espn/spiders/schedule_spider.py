@@ -18,14 +18,31 @@ class ESPNSpider(scrapy.Spider):
 		 				record = str(int(team.css('td::text').extract()[1].split()[0].split('-')[0]) - 1) + "-" + team.css('td::text').extract()[1].split()[0].split('-')[1]
 		 			else:
 		 				record = team.css('td::text').extract()[1].split()[0].split('-')[0] + "-" + str(int(team.css('td::text').extract()[1].split()[0].split('-')[1]) - 1)
+
+		 			#check to see if it is a neutral court game
+					try:
+						if team.css('td ul li::text').extract()[2] == "*":
+							neutral = 1
+						else:
+							neutral = 0
+					except IndexError:
+						try:
+							if team.css('td ul li::text').extract()[1] == "*":
+								neutral = 1
+							else:
+								neutral = 0
+						except IndexError:
+							neutral = 0
+
 					yield {
-						'record': record,
+						# 'record': record,
 						'game_id': team.css('td ul a::attr(href)').extract()[2].split('/')[7],
-						'day': datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%A').lower(),
-						'date': self.start_urls[0].split('/')[10] + "-" + datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%m-%d'),
-						'home_id': self.start_urls[0].split('/')[8],
-						'opp_id': team.css('td ul a::attr(href)').extract()[0].split('/')[7],
-						'score': team.css('td ul a::text').extract()[1].split(' ')[0],
-						'result': result
+						# 'day': datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%A').lower(),
+						# 'date': self.start_urls[0].split('/')[10] + "-" + datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%m-%d'),
+						# 'school_id': self.start_urls[0].split('/')[8],
+						# 'opp_id': team.css('td ul a::attr(href)').extract()[0].split('/')[7],
+						# 'score': team.css('td ul a::text').extract()[1].split(' ')[0],
+						# 'result': result,
+						'neutral_court': neutral
 						# 'post_conf_record': team.css('td::text').extract()[1].split()[1]
 						}
