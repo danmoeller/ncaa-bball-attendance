@@ -37,16 +37,16 @@ class GameSpider(scrapy.Spider):
 			if home_losses == 0:
 				home_win_pct = 1
 			else:
-				home_win_pct = home_wins / home_losses
+				home_win_pct = home_wins / (home_losses + home_wins)
 
-		# win percentage of home team
+		# win percentage of away team
 		if away_wins == 0:
 			away_win_pct = 0
 		else:
 			if away_losses == 0:
 				away_win_pct = 1
 			else:
-				away_win_pct = away_wins / away_losses
+				away_win_pct = away_wins / (away_losses + away_wins)
 
 		# home opener check
 		if home_wins + home_losses == 0:
