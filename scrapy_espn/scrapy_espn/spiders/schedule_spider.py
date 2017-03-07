@@ -22,17 +22,17 @@ class ESPNSpider(scrapy.Spider):
 		 			#check to see if it is a neutral court game
 					try:
 						if team.css('td ul li::text').extract()[2] == "*":
-							neutral = 1
+							neutral = "yes"
 						else:
-							neutral = 0
+							neutral = "no"
 					except IndexError:
 						try:
 							if team.css('td ul li::text').extract()[1] == "*":
-								neutral = 1
+								neutral = "yes"
 							else:
-								neutral = 0
+								neutral = "no"
 						except IndexError:
-							neutral = 0
+							neutral = "no"
 
 					yield {
 						# 'record': record,

@@ -16,7 +16,7 @@ if [ "$1" != "" ]; then
 		done 
 	} < "../data/team_list.csv"
 
-	if [ "$FOUND" == 1 ]; then
+	if [ "$FOUND" = 1 ]; then
 		if [ "$2" != "" ]; then
 			echo "scrapy crawl schedule -a team=$1 -a year=$2 -o $1_$2.csv -t csv"
 			scrapy crawl schedule -a team="$1" -a year="$2" -o "$1_$2_schedule".csv -t csv
@@ -28,12 +28,8 @@ if [ "$1" != "" ]; then
 				read
 				while IFS=, read game_id neutral_court
 				do
-					if [ "$neutral_court" == 1]; then
-						printf "\n\nSkipping game: $game_id since it is neutral court\n\n"
-					else
-						printf "\n\ncrawling game: $game_id\n\n"
-						scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
-					fi
+					printf "crawling game: $game_id\n\n"
+					scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
 				done 
 			} < "../data/$1_$2_schedule.csv"
 
