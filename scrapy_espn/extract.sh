@@ -1,5 +1,4 @@
 #!/bin/bash
-import sys
 
 FOUND=0
 
@@ -11,7 +10,7 @@ if [ "$1" != "" ]; then
 			if [[ "$num" == "$1" ]]; then
 				# Found a school with an id that matches the first argument
 				FOUND=1
-				printf "\nCrawling: $school schedule for year $2\n\n"
+				echo "Crawling: $school schedule for year $2"
     		fi
 		done 
 	} < "../data/team_list.csv"
@@ -22,7 +21,7 @@ if [ "$1" != "" ]; then
 			scrapy crawl schedule -a team="$1" -a year="$2" -o "$1_$2_schedule".csv -t csv
 	
 			mv "$1_$2_schedule".csv ../data/
-			printf "\n\nLook for your teams schedule at ../data/$1_$2_schedule.csv\n\n"
+			echo "Look for your teams schedule at ../data/$1_$2_schedule.csv"
 
 			{
 				read
@@ -46,11 +45,11 @@ if [ "$1" != "" ]; then
 			cat -n "$1_$2_games.csv" | sort -uk2 | sort -nk1 | cut -f2- > "../data/$1_$2_games.csv"
 			rm "$1_$2_games.csv"
 		else
-			printf "\n\n Please provide a second argument containting the year you would like to crawl\n\n"
+			echo "Please provide a second argument containting the year you would like to crawl"
 		fi
 	else
-		printf "\n\nCould not find a team that corresponds to team identifier: $1\n\n"
+		echo "Could not find a team that corresponds to team identifier: $1"
 	fi
 else
-	printf "\n\nPlease list a schools identifier and year of data you would like to crawl\n\n"
+	echo "Please list a schools identifier and year of data you would like to crawl"
 fi
