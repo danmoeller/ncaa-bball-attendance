@@ -13,36 +13,40 @@ class ESPNSpider(scrapy.Spider):
 		for team in response.css('table.tablehead tr'):
 			if team.css('::attr(class)').extract()[0] not in ['colhead', 'stathead', 'evenrow', 'oddrow']:
 		 		if len(team.css('td::text').extract()) == 2:
-		 			result = team.css('td ul span::text').extract()[0].lower()
-		 			if result == "w":
-		 				record = str(int(team.css('td::text').extract()[1].split()[0].split('-')[0]) - 1) + "-" + team.css('td::text').extract()[1].split()[0].split('-')[1]
-		 			else:
-		 				record = team.css('td::text').extract()[1].split()[0].split('-')[0] + "-" + str(int(team.css('td::text').extract()[1].split()[0].split('-')[1]) - 1)
+		 			try:
+		 				result = team.css('td ul span::text').extract()[0].lower()
+						if result == "w":
+		 					record = str(int(team.css('td::text').extract()[1].split()[0].split('-')[0]) - 1) + "-" + team.css('td::text').extract()[1].split()[0].split('-')[1]
+		 				else:
+		 					record = team.css('td::text').extract()[1].split()[0].split('-')[0] + "-" + str(int(team.css('td::text').extract()[1].split()[0].split('-')[1]) - 1)
 
-		 			#check to see if it is a neutral court game
-					try:
-						if team.css('td ul li::text').extract()[2] == "*":
-							neutral = "yes"
-						else:
-							neutral = "no"
-					except IndexError:
+		 				#check to see if it is a neutral court game
 						try:
-							if team.css('td ul li::text').extract()[1] == "*":
+							if team.css('td ul li::text').extract()[2] == "*":
 								neutral = "yes"
 							else:
 								neutral = "no"
 						except IndexError:
-							neutral = "no"
+							try:
+								if team.css('td ul li::text').extract()[1] == "*":
+									neutral = "yes"
+								else:
+									neutral = "no"
+							except IndexError:
+								neutral = "no"
 
-					yield {
-						# 'record': record,
-						'game_id': team.css('td ul a::attr(href)').extract()[2].split('/')[7],
-						# 'day': datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%A').lower(),
-						# 'date': self.start_urls[0].split('/')[10] + "-" + datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%m-%d'),
-						# 'school_id': self.start_urls[0].split('/')[8],
-						# 'opp_id': team.css('td ul a::attr(href)').extract()[0].split('/')[7],
-						# 'score': team.css('td ul a::text').extract()[1].split(' ')[0],
-						# 'result': result,
-						'neutral_court': neutral
-						# 'post_conf_record': team.css('td::text').extract()[1].split()[1]
-						}
+						yield {
+							# 'record': record,
+							'game_id': team.css('td ul a::attr(href)').extract()[2].split('/')[7],
+							# 'day': datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%A').lower(),
+							# 'date': self.start_urls[0].split('/')[10] + "-" + datetime.datetime.strptime(team.css('td::text').extract()[0], '%a, %b %d').strftime('%m-%d'),
+							# 'school_id': self.start_urls[0].split('/')[8],
+							# 'opp_id': team.css('td ul a::attr(href)').extract()[0].split('/')[7],
+							# 'score': team.css('td ul a::text').extract()[1].split(' ')[0],
+							# 'result': result,
+							'neutral_court': neutral
+							# 'post_conf_record': team.css('td::text').extract()[1].split()[1]
+							}
+		 			except IndexError:
+		 				print "Skipped this game due to no results"
+		 			
