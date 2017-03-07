@@ -37,8 +37,12 @@ if [ "$1" != "" ]; then
 			done 
 		} < "../data/$1_$2_schedule.csv"
 
+		# Delete temporary schedule file
+		rm "../data/$1_$2_schedule.csv"
+
 		cat -n "$1_$2_games.csv" | sort -uk2 | sort -nk1 | cut -f2- > "../data/$1_$2_games.csv"
 		rm "$1_$2_games.csv"
+
 
 
 
