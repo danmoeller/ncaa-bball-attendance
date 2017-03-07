@@ -36,10 +36,35 @@ class GameSpider(scrapy.Spider):
 		except IndexError:
 			away_rank = 0
 
+		#tv network if available
 		try:
 			tv_coverage = response.css('div.game-network::text').extract()[0].split()[1].lower()
 		except IndexError:
 			tv_coverage = ""
+
+		#attendance if availalbe
+		try:
+			attendance = response.css('div.game-info-note.capacity::text').extract()[0].split()[1].replace(',','')
+		except IndexError:
+			attendance = ""
+
+		#capacity if available
+		try:
+			capacity = response.css('div.game-info-note.capacity::text').extract()[1].split()[1].replace(',','')
+		except IndexError:
+			capacity = ""
+
+		#home team conference record if available
+		try:
+			home_conf_record = response.css('div.team-info div.record span.inner-record::text').extract()[1].split()[1]
+		except IndexError:
+			home_conf_record = "0-0"
+
+		#away team conference record if available
+		try:
+			away_conf_record = response.css('div.team-info div.record span.inner-record::text').extract()[0].split()[1]
+		except IndexError:
+			away_conf_record = "0-0"
 
 
 		yield {
@@ -48,18 +73,18 @@ class GameSpider(scrapy.Spider):
 			'home_id': response.css('div.team-info a::attr(href)').extract()[1].split('/')[5],
 			'home_rank': home_rank,
 			'home_record': response.css('div.team-info div.record::text').extract()[1],
-			'home_conf_record': response.css('div.team-info div.record span.inner-record::text').extract()[1].split()[1],
+			'home_conf_record': home_conf_record,
 			#'away_name':response.css('div.team-info a.team-name span.long-name::text').extract()[0].replace(" ", "_").lower(),
 			'away_id': response.css('div.team-info a::attr(href)').extract()[0].split('/')[5],
 			'away_rank': away_rank,
 			'away_record': response.css('div.team-info div.record::text').extract()[0],
-			'away_conf_record': response.css('div.team-info div.record span.inner-record::text').extract()[0].split()[1],
+			'away_conf_record': away_conf_record,
 			'date': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0],
 			'time': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[1][:-1],
-			'arena': arena,
+			# 'arena': arena,
 			'tv_coverage': tv_coverage,
 			'line': line,
-			'attendance': response.css('div.game-info-note.capacity::text').extract()[0].split()[1].replace(',',''),
-			'capacity': response.css('div.game-info-note.capacity::text').extract()[1].split()[1].replace(',','')
+			'attendance': attendance,
+			'capacity': capacity
 			#'refs': response.css('div.game-info-note span::text').extract()
 		}
