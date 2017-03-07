@@ -45,6 +45,7 @@ if [ "$1" != "" ]; then
 			rm "$1_$2_games.csv"
 		else
 			printf "\n\n Please provide a second argument containting the year you would like to crawl\n\n"
+		fi
 	else
 		printf "\n\nCould not find a team that corresponds to team identifier: $1\n\n"
 	fi
