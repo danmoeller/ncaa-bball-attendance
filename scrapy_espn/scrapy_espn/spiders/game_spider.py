@@ -50,9 +50,9 @@ class GameSpider(scrapy.Spider):
 
 		# home opener check
 		if home_wins + home_losses == 0:
-			first_game = "true"
+			first_game = 1
 		else:
-			first_game = "false"
+			first_game = 0
 
 		# home AP rank else 0
 		try:
@@ -128,7 +128,7 @@ class GameSpider(scrapy.Spider):
 			'home_rank': home_rank,
 			'home_wins': home_wins,
 			'home_losses': home_losses,
-			'home_win_pct': home_win_pct,
+			'home_win_pct': round(home_win_pct, 3),
 			'home_score': home_score,
 			'home_opener': first_game,
 			# 'home_record': response.css('div.team-info div.record::text').extract()[1],
@@ -138,7 +138,7 @@ class GameSpider(scrapy.Spider):
 			'away_rank': away_rank,
 			'away_wins': away_wins,
 			'away_losses': away_losses,
-			'away_win_pct': away_win_pct,
+			'away_win_pct': round(away_win_pct, 3),
 			'away_score': away_score,
 			# 'away_record': response.css('div.team-info div.record::text').extract()[0],
 			#'away_conf_record': away_conf_record,
