@@ -142,7 +142,7 @@ class GameSpider(scrapy.Spider):
 			'away_score': away_score,
 			# 'away_record': response.css('div.team-info div.record::text').extract()[0],
 			#'away_conf_record': away_conf_record,
-			'month': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0].split('-')[1],
+			'date': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0],
 			'time': response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[1][:-1],
 			'day': datetime.datetime.strptime(response.css('div.game-date-time span::attr(data-date)').extract()[0].split('T')[0], '%Y-%m-%d').strftime('%A').lower(),
 			# 'arena': arena,

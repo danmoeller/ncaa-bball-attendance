@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FOUND=0
+NAME=""
 
 if [ "$1" != "" ]; then
     {
@@ -10,6 +11,7 @@ if [ "$1" != "" ]; then
 			if [[ "$num" == "$1" ]]; then
 				# Found a school with an id that matches the first argument
 				FOUND=1
+				NAME="$school"
 				echo "Crawling: $school schedule for year $2"
     		fi
 		done 
@@ -17,11 +19,11 @@ if [ "$1" != "" ]; then
 
 	if [ "$FOUND" = 1 ]; then
 		if [ "$2" != "" ]; then
-			echo "scrapy crawl schedule -a team=$1 -a year=$2 -o $1_$2.csv -t csv"
-			scrapy crawl schedule -a team="$1" -a year="$2" -o "$1_$2_schedule".csv -t csv
+			echo "scrapy crawl schedule -a team=$1 -a year=$2 -o ${NAME}_$2.csv -t csv"
+			scrapy crawl schedule -a team="$1" -a year="$2" -o "${NAME}_$2_schedule".csv -t csv
 	
-			mv "$1_$2_schedule".csv ../data/
-			echo "Look for your teams schedule at ../data/$1_$2_schedule.csv"
+			mv "${NAME}_$2_schedule".csv ../data/
+			echo "Look for your teams schedule at ../data/${NAME}_$2_schedule.csv"
 
 			{
 				read
@@ -33,17 +35,23 @@ if [ "$1" != "" ]; then
 						echo "Skipping game: $game_id since on neutral court"
 					else
 						echo "crawling game: $game_id"
-						scrapy crawl game -a game="$game_id" -o "$1_$2_games.csv" -t csv
+						scrapy crawl game -a game="$game_id" -o "${NAME}_$2_games.csv" -t csv
 					fi
 				done 
-			} < "../data/$1_$2_schedule.csv"
+			} < "../data/${NAME}_$2_schedule.csv"
 
 			# Delete temporary schedule file
-			rm "../data/$1_$2_schedule.csv"
+			rm "../data/${NAME}_$2_schedule.csv"
 
+			# Create directory for team if it does not exist
+			mkdir -p "../data/${NAME}"
+			
 			# Remove duplicate data lines (mostly headers) and move to data folder
-			cat -n "$1_$2_games.csv" | sort -uk2 | sort -nk1 | cut -f2- > "../data/$1_$2_games.csv"
-			rm "$1_$2_games.csv"
+			cat -n "${NAME}_$2_games.csv" | sort -uk2 | sort -nk1 | cut -f2- > "../data/${NAME}/${NAME}_$2_games.csv"
+			rm "${NAME}_$2_games.csv"
+			
+
+
 		else
 			echo "Please provide a second argument containting the year you would like to crawl"
 		fi
