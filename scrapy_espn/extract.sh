@@ -22,7 +22,7 @@ if [ "$1" != "" ]; then
 			echo "scrapy crawl schedule -a team=$1 -a year=$2 -o ${NAME}_$2.csv -t csv"
 			scrapy crawl schedule -a team="$1" -a year="$2" -o "${NAME}_$2_schedule".csv -t csv
 	
-			mv "${NAME}_$2_schedule".csv ../data/
+			mv "${NAME}_$2_schedule".csv "../data/${NAME}/"
 			echo "Look for your teams schedule at ../data/${NAME}_$2_schedule.csv"
 
 			{
@@ -38,10 +38,10 @@ if [ "$1" != "" ]; then
 						scrapy crawl game -a game="$game_id" -o "${NAME}_$2_games.csv" -t csv
 					fi
 				done 
-			} < "../data/${NAME}_$2_schedule.csv"
+			} < "../data/${NAME}/${NAME}_$2_schedule.csv"
 
 			# Delete temporary schedule file
-			rm "../data/${NAME}_$2_schedule.csv"
+			rm "../data/${NAME}/${NAME}_$2_schedule.csv"
 
 			# Create directory for team if it does not exist
 			mkdir -p "../data/${NAME}"
