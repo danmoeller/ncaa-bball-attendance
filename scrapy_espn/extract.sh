@@ -21,9 +21,10 @@ if [ "$1" != "" ]; then
 		if [ "$2" != "" ]; then
 			echo "scrapy crawl schedule -a team=$1 -a year=$2 -o ${NAME}_$2.csv -t csv"
 			scrapy crawl schedule -a team="$1" -a year="$2" -o "${NAME}_$2_schedule".csv -t csv
-	
+
+			mkdir -p "../data/${NAME}"
 			mv "${NAME}_$2_schedule".csv "../data/${NAME}/"
-			echo "Look for your teams schedule at ../data/${NAME}_$2_schedule.csv"
+			echo "Look for your teams sch edule at ../data/${NAME}_$2_schedule.csv"
 
 			{
 				read
