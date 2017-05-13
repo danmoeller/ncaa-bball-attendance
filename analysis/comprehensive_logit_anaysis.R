@@ -5,7 +5,7 @@ library(tidyr)
 library(dplyr)
 
 # datasets
-games <- read.csv("/Users/DanMoeller/git/ncaa-bball-attendance/data/big_east/big_east_2014_2016.csv", header=TRUE, stringsAsFactors=FALSE)
+games <- read.csv("/Users/DanMoeller/git/ncaa-bball-attendance/data/big_12_big_east_2014_2016.csv", header=TRUE, stringsAsFactors=FALSE)
 attendance <- read.csv("/Users/DanMoeller/git/ncaa-bball-attendance/data/ncaa_attendance_2009-2016.csv", header=TRUE, stringsAsFactors=FALSE)
 teams <- read.csv("/Users/DanMoeller/git/ncaa-bball-attendance/data/team_list.csv", header=TRUE, stringsAsFactors=FALSE)
 
@@ -50,11 +50,8 @@ games$home_rank[(games$home_rank >= 16) & (games$home_rank <= 20)] <- 20
 games$home_rank[(games$home_rank >= 21) & (games$home_rank <= 25)] <- 25
 
 games$away_rank[games$away_rank == 0] <- 0
-games$away_rank[(games$away_rank >= 1) & (games$away_rank <= 5)] <- 5
-games$away_rank[(games$away_rank >= 6) & (games$away_rank <= 10)] <- 10
-games$away_rank[(games$away_rank >= 11) & (games$away_rank <= 15)] <- 15
-games$away_rank[(games$away_rank >= 16) & (games$away_rank <= 20)] <- 20
-games$away_rank[(games$away_rank >= 21) & (games$away_rank <= 25)] <- 25
+games$away_rank[(games$away_rank >= 1) & (games$away_rank <= 10)] <- 10
+games$away_rank[(games$away_rank >= 11) & (games$away_rank <= 25)] <- 25
 
 # split out the date
 games <- games %>%
@@ -152,9 +149,9 @@ with(games.logit, pchisq(null.deviance - deviance, df.null - df.residual, lower.
 logLik(games.logit)
 
 # get a visual for how capacity and away_rank impact probability of a sellout.
-newdata1 <- with(games, data.frame(capacity = mean(capacity), away_rank = factor(seq(from=0, to=25, by=5)), day_of_week = "weekend", line = mean(line), attendance_avg = mean(attendance_avg), conf_game = 1))
+newdata1 <- with(games, data.frame(capacity = mean(capacity), away_rank = factor(unique(games$away_rank)), day_of_week = "weekend", line = mean(line), attendance_avg = mean(attendance_avg), conf_game = 1))
 newdata1$away_rankP <- predict(games.logit, newdata = newdata1, type = "response")
-newdata2 <- with(games, data.frame(capacity = rep(seq(from = 4, to = 15, length.out = 100), 6), away_rank = factor(rep(seq(from=0, to=25, by=5), each = 100)), day_of_week = "weekend", line = mean(line), attendance_avg = mean(attendance_avg), conf_game = 1))
+newdata2 <- with(games, data.frame(capacity = rep(seq(from = 4, to = 15, length.out = 100), 6), away_rank = factor(rep(unique(games$away_rank), each = 200)), day_of_week = "weekend", line = mean(line), attendance_avg = mean(attendance_avg), conf_game = 1))
 newdata3 <- cbind(newdata2, predict(games.logit, newdata = newdata2, type = "link", se = TRUE))
 newdata3 <- within(newdata3, {
   PredictedProb <- plogis(fit)
@@ -164,7 +161,7 @@ newdata3 <- within(newdata3, {
 ggplot(newdata3, aes(x = capacity, y = PredictedProb)) + geom_ribbon(aes(ymin = LL, ymax = UL, fill = away_rank), alpha = 0.2) + geom_line(aes(colour = away_rank),size = 1)
 
 # get a visual for how previous years average attendance and away_rank impact probability of a sellout.
-newdata4 <- with(games, data.frame(capacity = mean(capacity), away_rank = factor(rep(seq(from=0, to=25, by=5), each = 100)), day_of_week = "weekend", line = mean(line), attendance_avg = rep(seq(from = 4, to = 15, length.out = 100), 6), conf_game = 1))
+newdata4 <- with(games, data.frame(capacity = mean(capacity), away_rank = factor(rep(unique(games$away_rank), each = 100)), day_of_week = "weekend", line = mean(line), attendance_avg = rep(seq(from = 4, to = 15, length.out = 100), 6), conf_game = 1))
 newdata5 <- cbind(newdata4, predict(games.logit, newdata = newdata4, type = "link", se = TRUE))
 newdata5 <- within(newdata5, {
   PredictedProb <- plogis(fit)
